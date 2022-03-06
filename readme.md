@@ -1,5 +1,5 @@
-### what?
+### What?
 
-- app to practice recognizing notes on musical instruments.
+App to practice recognizing notes on musical instruments.
 
-link - https://sus4.vercel.app/
+https://sus4.nishan.dev/
