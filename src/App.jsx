@@ -35,13 +35,13 @@ function App() {
         fontWeight={400}
         fontSize={120}
         position="absolute"
-        top={12}
-        left={12}
+        top={10}
+        left={10}
         transform="rotate(-20deg)"
       >
         Sus4
       </Heading>
-      <Box pos="absolute" bottom={12} left={12}>
+      <Box pos="absolute" bottom={10} left={10}>
         <a
           aria-label="source code"
           href="https://github.com/intergalacticspacehighway/sus4"

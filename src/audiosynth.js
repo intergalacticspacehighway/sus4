@@ -1,3 +1,5 @@
+// Source code
+// https://github.com/keithwhor/audiosynth/blob/master/audiosynth.js
 var Synth, AudioSynth, AudioSynthInstrument, f, o;
 !(function () {
   var URL = window.URL || window.webkitURL;
