@@ -1,5 +1,9 @@
 import { Synth } from "./audiosynth";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRecognizerRef } from "./use-recognizer";
+import { Box, Flex, VStack } from "@chakra-ui/layout";
+import { Button } from "@chakra-ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 const piano = Synth.createInstrument("piano");
 
@@ -12,52 +16,60 @@ const randomGenerator = (array) => () =>
 const randomNote = randomGenerator(allNotes);
 const randomOctave = randomGenerator(octaves);
 
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-const SpeechGrammarList =
-  window.SpeechGrammarList || window.webkitSpeechGrammarList;
-const recognition = new SpeechRecognition();
-
-// grammar doesn't work in safari
-if (SpeechGrammarList) {
-  const speechRecognitionList = new SpeechGrammarList();
-
-  var commands = ["next", "repeat", "show"];
-  var grammar =
-    "#JSGF V1.0; grammar commands; public <command> = " +
-    commands.join(" | ") +
-    " ;";
-
-  speechRecognitionList.addFromString(grammar, 1);
-  recognition.grammars = speechRecognitionList;
-}
-
-recognition.continuous = true;
-recognition.lang = "en-US";
-recognition.interimResults = false;
-
-recognition.start();
-recognition.onend = () => {
-  recognition.start();
-};
-
 const playNote = (note, octave) => {
   piano.play(note, octave, 20);
 };
 
 function App() {
+  const [show, setShow] = useState(false);
+  return (
+    <Flex
+      backgroundColor="gray.600"
+      h="100vh"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <VStack>
+        <AnimatePresence>
+          {show ? (
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.2 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+            >
+              <Play />
+            </motion.div>
+          ) : (
+            <Button onClick={() => setShow(true)}>Press here to enter</Button>
+          )}
+        </AnimatePresence>
+      </VStack>
+    </Flex>
+  );
+}
+
+const Play = () => {
   const [state, setState] = useState(() => ({
     note: randomNote(),
     octave: randomOctave(),
   }));
-  const previousState = useRef(state);
-
   const [showNote, setShowNote] = useState(false);
 
-  useEffect(() => {
-    previousState.current.note = state.note;
-    previousState.current.octave = state.octave;
-  });
+  const resultCallback = (event) => {
+    const command =
+      event.results[event.results.length - 1][0].transcript.trim();
+    if (command === "repeat") {
+      playNote(state.note, state.octave);
+    } else if (command === "next") {
+      playNewNote();
+    } else if (command === "show") {
+      setShowNote(true);
+    }
+    console.log("Confidence: " + event.results[0][0].confidence, event.results);
+  };
+
+  useRecognizerRef(resultCallback);
 
   const playNewNote = useCallback(() => {
     setShowNote(false);
@@ -67,31 +79,18 @@ function App() {
     setState({ note: newNote, octave: newOctave });
   }, []);
 
-  useEffect(() => {
-    recognition.onresult = (event) => {
-      const command =
-        event.results[event.results.length - 1][0].transcript.trim();
-
-      if (command === "repeat") {
-        playNote(previousState.current.note, previousState.current.octave);
-      } else if (command === "play") {
-        playNewNote();
-      } else if (command === "show") {
-        setShowNote(true);
-      }
-      console.log(
-        "Confidence: " + event.results[0][0].confidence,
-        event.results
-      );
-    };
-  }, []);
+  const playCurrentNote = useCallback(() => {
+    playNote(state.note, state.octave);
+  }, [state]);
 
   useEffect(() => {
     const eventListener = (e) => {
-      if (e.key === "p") {
+      if (e.key === "n") {
         playNewNote();
       } else if (e.key === "r") {
-        playNote(note, octave);
+        playCurrentNote();
+      } else if (e.key === "s") {
+        setShowNote(true);
       }
     };
 
@@ -100,44 +99,73 @@ function App() {
     return () => {
       window.removeEventListener("keydown", eventListener);
     };
-  }, [state, playNewNote]);
+  }, [playNewNote, playCurrentNote]);
 
   return (
-    <div className="App">
-      <button onClick={playNewNote}>play a random note</button>
+    <Box>
+      <VStack spacing={4} alignItems="stretch">
+        <Button onClick={playNewNote}>play a random note</Button>
 
-      <button
-        onClick={() => {
-          setShowNote(true);
-        }}
-      >
-        show what was played
-      </button>
+        <Button
+          onClick={() => {
+            playNote(state.note, state.octave);
+          }}
+        >
+          repeat
+        </Button>
 
-      <button
-        onClick={() => {
-          playNote(note, octave);
-        }}
-      >
-        repeat
-      </button>
+        <Button
+          onClick={() => {
+            setShowNote(true);
+          }}
+        >
+          show note
+        </Button>
 
-      {showNote ? (
-        <div>
-          {state.note} {state.octave}{" "}
-        </div>
-      ) : null}
+        <Box height={14}>
+          {showNote ? (
+            <Flex
+              borderWidth="2px"
+              borderStyle="dashed"
+              color="white"
+              alignItems="center"
+              justifyContent="center"
+              height={14}
+              borderRadius={10}
+            >
+              {state.note} {state.octave}{" "}
+            </Flex>
+          ) : null}
+        </Box>
+      </VStack>
 
-      <button
-        id="dummy"
-        onClick={() => {
-          console.log("interacted");
-        }}
-      >
-        interact with me first
-      </button>
-    </div>
+      <Flex mt={50}>
+        <Box color="gray.300" mt="4">
+          <Box fontWeight="bold" mb={1}>
+            Voice commands
+          </Box>
+          <VStack alignItems="flex-start" spacing={1}>
+            <Box>say 'next' - to play a random note</Box>
+            <Box>say 'repeat' - to repeat the note</Box>
+            <Box>say 'show' - to show the played note</Box>
+          </VStack>
+        </Box>
+
+        <Box w={20} />
+
+        <Box color="gray.300" mt="4">
+          <Box fontWeight="bold" mb={2}>
+            Keyboard shortcuts
+          </Box>
+          <VStack alignItems="flex-start" spacing={1}>
+            <Box>press 'n' - to play a random note</Box>
+            <Box>press 'r' - to repeat the note</Box>
+            <Box>press 's' - to show the note</Box>
+          </VStack>
+        </Box>
+      </Flex>
+    </Box>
   );
-}
+};
 
 export default App;
