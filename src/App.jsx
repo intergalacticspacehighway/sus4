@@ -1,7 +1,7 @@
 import { Synth } from "./audiosynth";
 import { useCallback, useEffect, useState } from "react";
 import { useRecognizerRef } from "./use-recognizer";
-import { Box, Flex, VStack } from "@chakra-ui/layout";
+import { Box, Flex, Heading, VStack } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -29,6 +29,18 @@ function App() {
       alignItems="center"
       justifyContent="center"
     >
+      <Heading
+        color="white"
+        fontFamily="Are You Serious"
+        fontWeight={400}
+        fontSize={120}
+        position="absolute"
+        top={0}
+        left={0}
+        transform="rotate(-20deg)"
+      >
+        Sus4
+      </Heading>
       <VStack>
         <AnimatePresence>
           {show ? (
@@ -41,7 +53,18 @@ function App() {
               <Play />
             </motion.div>
           ) : (
-            <Button onClick={() => setShow(true)}>Press here to enter</Button>
+            <VStack spacing={4}>
+              <Button
+                variant="outline"
+                color="white"
+                backgroundColor="transparent"
+                _hover={{ backgroundColor: "transparent" }}
+                _active={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+                onClick={() => setShow(true)}
+              >
+                Press here
+              </Button>
+            </VStack>
           )}
         </AnimatePresence>
       </VStack>
@@ -104,23 +127,23 @@ const Play = () => {
   return (
     <Box>
       <VStack spacing={4} alignItems="stretch">
-        <Button onClick={playNewNote}>Play</Button>
+        <MyButton onClick={playNewNote}>Play</MyButton>
 
-        <Button
+        <MyButton
           onClick={() => {
             playNote(state.note, state.octave);
           }}
         >
           Repeat
-        </Button>
+        </MyButton>
 
-        <Button
+        <MyButton
           onClick={() => {
             setShowNote(true);
           }}
         >
           Show
-        </Button>
+        </MyButton>
 
         <Box height={14}>
           {showNote ? (
@@ -169,3 +192,18 @@ const Play = () => {
 };
 
 export default App;
+
+const MyButton = (props) => {
+  return (
+    <Button
+      variant="outline"
+      color="white"
+      backgroundColor="transparent"
+      _hover={{ backgroundColor: "transparent" }}
+      _active={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </Button>
+  );
+};
