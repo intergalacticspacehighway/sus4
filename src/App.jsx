@@ -127,7 +127,7 @@ const Play = () => {
   return (
     <Box>
       <VStack spacing={4} alignItems="stretch">
-        <MyButton onClick={playNewNote}>Play</MyButton>
+        <MyButton onClick={playNewNote}>Next</MyButton>
 
         <MyButton
           onClick={() => {
