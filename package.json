@@ -1,0 +1,23 @@
+{
+  "name": "random-notes",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tonejs/piano": "^0.2.1",
+    "events": "^3.3.0",
+    "global": "^4.4.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tone": "^14.7.77",
+    "webmidi": "^3.0.15"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^1.0.7",
+    "vite": "^2.8.6"
+  }
+}

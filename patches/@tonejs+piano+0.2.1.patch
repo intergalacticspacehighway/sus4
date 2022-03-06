@@ -1,0 +1,13 @@
+diff --git a/node_modules/@tonejs/piano/build/midi/MidiInput.js b/node_modules/@tonejs/piano/build/midi/MidiInput.js
+index 7c5a066..ab69ffa 100644
+--- a/node_modules/@tonejs/piano/build/midi/MidiInput.js
++++ b/node_modules/@tonejs/piano/build/midi/MidiInput.js
+@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
+     });
+ };
+ import { EventEmitter } from 'events';
+-import WebMidi from 'webmidi';
++import {WebMidi} from 'webmidi';
+ export class MidiInput extends EventEmitter {
+     constructor(deviceId = 'all') {
+         super();
