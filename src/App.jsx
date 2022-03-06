@@ -4,6 +4,7 @@ import { useRecognizerRef } from "./use-recognizer";
 import { Box, Flex, Heading, VStack } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 
 const piano = Synth.createInstrument("piano");
 
@@ -22,6 +23,9 @@ const playNote = (note, octave) => {
 
 function App() {
   const [show, setShow] = useState(false);
+  useEffect(() => {
+    document.querySelector("#hello").focus();
+  }, []);
   return (
     <Flex
       backgroundColor="gray.800"
@@ -41,6 +45,28 @@ function App() {
       >
         Sus4
       </Heading>
+
+      <VStack>
+        <AnimatePresence>
+          {show ? (
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.2 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+            >
+              <Play />
+            </motion.div>
+          ) : (
+            <VStack spacing={4}>
+              <MyButton id="hello" onClick={() => setShow(true)}>
+                Press here
+              </MyButton>
+            </VStack>
+          )}
+        </AnimatePresence>
+      </VStack>
+
       <Box pos="absolute" bottom={10} left={10}>
         <a
           aria-label="source code"
@@ -63,33 +89,6 @@ function App() {
           </svg>
         </a>
       </Box>
-      <VStack>
-        <AnimatePresence>
-          {show ? (
-            <motion.div
-              initial={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.2 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-            >
-              <Play />
-            </motion.div>
-          ) : (
-            <VStack spacing={4}>
-              <Button
-                variant="outline"
-                color="white"
-                backgroundColor="transparent"
-                _hover={{ backgroundColor: "transparent" }}
-                _active={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-                onClick={() => setShow(true)}
-              >
-                Press here
-              </Button>
-            </VStack>
-          )}
-        </AnimatePresence>
-      </VStack>
     </Flex>
   );
 }
@@ -223,9 +222,15 @@ const MyButton = (props) => {
       backgroundColor="transparent"
       _hover={{ backgroundColor: "transparent" }}
       _active={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-      onClick={props.onClick}
-    >
-      {props.children}
-    </Button>
+      _focus={{
+        boxShadow:
+          "5px 5px 20px yellow, -5px -10px 20px blue, 5px -10px 20px red;",
+      }}
+      _focusVisible={{
+        boxShadow:
+          "5px 5px 20px yellow, -5px -10px 20px blue, 5px -10px 20px red;",
+      }}
+      {...props}
+    />
   );
 };
