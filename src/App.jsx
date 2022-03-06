@@ -24,7 +24,7 @@ function App() {
   const [show, setShow] = useState(false);
   return (
     <Flex
-      backgroundColor="gray.600"
+      backgroundColor="gray.800"
       h="100vh"
       alignItems="center"
       justifyContent="center"
@@ -104,14 +104,14 @@ const Play = () => {
   return (
     <Box>
       <VStack spacing={4} alignItems="stretch">
-        <Button onClick={playNewNote}>play a random note</Button>
+        <Button onClick={playNewNote}>Play</Button>
 
         <Button
           onClick={() => {
             playNote(state.note, state.octave);
           }}
         >
-          repeat
+          Repeat
         </Button>
 
         <Button
@@ -119,7 +119,7 @@ const Play = () => {
             setShowNote(true);
           }}
         >
-          show note
+          Show
         </Button>
 
         <Box height={14}>
